@@ -1,0 +1,21 @@
+#container {
+  height: 25vw;
+  width: 50vw;
+  margin: 10px;
+}
+
+#chart {
+  height: 100%;
+}
+
+#chart > svg {
+  height: 100%;
+  width: 100%;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
