@@ -24,8 +24,8 @@ var el = d3.select(chartContainer);
 var svg = el.append('svg').append('g')
   .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
-var xScale = d3.scale.ordinal();
-var yScale = d3.scale.linear();
+var xScale = d3.scale.ordinal().domain(d3.extent(data, pluck('x')));
+var yScale = d3.scale.linear().domain([0, d3.max(data, pluck('y'))]);
 
 var xAxis = d3.svg.axis().scale(xScale).orient('bottom');
 var yAxis = d3.svg.axis().scale(yScale).orient('left');
@@ -41,17 +41,11 @@ sizeChart();
 window.onresize = sizeChart;
 //
 function sizeChart() {
-  var containerHeight = parseInt(el.style('height').slice(0, -2), 10);
-  var containerWidth = parseInt(el.style('width').slice(0, -2), 10);
-  //
-  var height = containerHeight - margin.top - margin.bottom;
-  var width = containerWidth - margin.left - margin.right;
+  var height = parseInt(el.style('height'), 10) - margin.top - margin.bottom;
+  var width = parseInt(el.style('width'), 10) - margin.left - margin.right;
 
   xScale.rangeRoundBands([0, width], barSpacing);
-  xScale.domain(data.map(function(d) { return d.x }));
-  //
   yScale.range([height, 0]);
-  yScale.domain([0, d3.max(data, function(d) { return d.y })]);
 
   xAxisContainer
     .attr('transform', 'translate(0,' + height + ')')
@@ -63,4 +57,12 @@ function sizeChart() {
     .attr('y', function(d) { return yScale(d.y) })
     .attr('height', function(d) { return height - yScale(d.y) })
     .attr('width', xScale.rangeBand());
+}
+
+// helpers
+//
+function pluck(prop) {
+  return function(obj) {
+    return obj[prop];
+  }
 }

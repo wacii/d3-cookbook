@@ -1,7 +1,6 @@
 // generate data
 //
 var data = generateData([5, 10], [10, 15]);
-console.log(data)
 //
 function generateData(domain, range) {
   var y0 = range[0];
@@ -26,8 +25,8 @@ var el = d3.select('#chart');
 var svg = el.append('svg').append('g')
   .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
-var xScale = d3.scale.linear();
-var yScale = d3.scale.linear();
+var xScale = d3.scale.linear().domain(d3.extent(data, first));
+var yScale = d3.scale.linear().domain(d3.extent(data, second));
 
 var xAxis = d3.svg.axis().scale(xScale).orient('bottom');
 var yAxis = d3.svg.axis().scale(yScale).orient('left');
@@ -46,22 +45,19 @@ sizeChart();
 window.onresize = sizeChart;
 //
 function sizeChart() {
-  var containerHeight = parseInt(el.style('height'), 10);
-  var containerWidth = parseInt(el.style('width'), 10);
-  //
-  var height = containerHeight - margin.top - margin.bottom;
-  var width = containerWidth - margin.left - margin.right;
+  var height = parseInt(el.style('height'), 10) - margin.top - margin.bottom;
+  var width = parseInt(el.style('width'), 10) - margin.left - margin.right;
 
-  xScale.domain(d3.extent(data, function(d) { return d[0]; }));
   xScale.range([0, width]);
-  //
-  yScale.domain(d3.extent(data, function(d) { return d[1]; }));
   yScale.range([height, 0]);
 
-  xAxisContainer
-    .attr('transform', 'translate(0,' + height + ')')
-    .call(xAxis);
-  yAxisContainer.call(yAxis);
+  xAxis(xAxisContainer.attr('transform', 'translate(0,' + height + ')'));
+  yAxis(yAxisContainer);
 
   path.attr('d', line(data))
 }
+
+// helpers
+//
+function first(array) { return array[0]; }
+function second(array) { return array[1]; }
